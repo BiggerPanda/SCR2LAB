@@ -1,0 +1,77 @@
+
+1
+ps program do wyswietlania działających procesów
+-u pozwala nam wybierac procesy po urzytkownikach 
+-t pozwala nam wyswieltlac procesy przydzielone do odpowiednich terminali 
+-f powoduje dodatkowe formatownanie na wyswieltaniu procesów takie jak dodatkowe kolumny 
+-l wyswietla długi format 
+-p pozwala nam wyswietlac procesy poprzez process ID 
+
+2
+ po zabiciu procesu B zakończył sie proces A i proces C został Adapotwany przez basha
+
+kuba@kuba-VirtualBox:~/Desktop/Skrypty$ ./skrypt1.sh& 
+[1] 53700
+kuba@kuba-VirtualBox:~/Desktop/Skrypty$ ps af
+    PID TTY      STAT   TIME COMMAND
+  53574 pts/0    Ss     0:00 bash
+  53700 pts/0    S      0:00  \_ /bin/bash ./skrypt1.sh
+  53701 pts/0    S      0:00  |   \_ bash skrypt13.sh
+  53702 pts/0    S      0:00  |       \_ bash skrypt14.sh
+  53703 pts/0    S      0:00  |           \_ sleep 4000
+  53705 pts/0    R+     0:00  \_ ps af
+    746 tty2     Ssl+   0:00 /usr/lib/gdm3/gdm-x-session --run-script env GNOME_
+    751 tty2     Sl+    6:24  \_ /usr/lib/xorg/Xorg vt2 -displayfd 3 -auth /run/
+   1108 tty2     Sl+    0:00  \_ /usr/libexec/gnome-session-binary --systemd --s
+kuba@kuba-VirtualBox:~/Desktop/Skrypty$ kill -9 53701
+kuba@kuba-VirtualBox:~/Desktop/Skrypty$ ./skrypt1.sh: line 2: 53701 Killed                  bash skrypt13.sh
+ps af
+    PID TTY      STAT   TIME COMMAND
+  53574 pts/0    Ss     0:00 bash
+  53709 pts/0    R+     0:00  \_ ps af
+  53702 pts/0    S      0:00 bash skrypt14.sh
+  53703 pts/0    S      0:00  \_ sleep 4000
+    746 tty2     Ssl+   0:00 /usr/lib/gdm3/gdm-x-session --run-script env GNOME_
+    751 tty2     Sl+    6:24  \_ /usr/lib/xorg/Xorg vt2 -displayfd 3 -auth /run/
+   1108 tty2     Sl+    0:00  \_ /usr/libexec/gnome-session-binary --systemd --s
+[1]+  Exit 137                ./skrypt1.sh
+kuba@kuba-VirtualBox:~/Desktop/Skrypty$
+
+3
+
+Wszystkie procesy wywołane są dziecmi basha 
+
+kuba@kuba-VirtualBox:~/Desktop/Skrypty$ ./skrypt2.sh|cat|cat& 
+[2] 53989
+kuba@kuba-VirtualBox:~/Desktop/Skrypty$ raz dwa trzy
+ps -af
+UID          PID    PPID  C STIME TTY          TIME CMD
+kuba         751     746  1 06:11 tty2     00:06:32 /usr/lib/xorg/Xorg vt2 -disp
+kuba        1108     746  0 06:11 tty2     00:00:00 /usr/libexec/gnome-session-b
+kuba       53702     726  0 12:39 pts/0    00:00:00 bash skrypt14.sh
+kuba       53703   53702  0 12:39 pts/0    00:00:00 sleep 4000
+kuba       53934   53574  0 12:57 pts/0    00:00:00 cat
+kuba       53935   53574  0 12:57 pts/0    00:00:00 cat
+kuba       53937     726  0 12:57 pts/0    00:00:00 sleep 2
+kuba       53987   53574  0 12:59 pts/0    00:00:00 /bin/bash ./skrypt2.sh
+kuba       53988   53574  0 12:59 pts/0    00:00:00 cat
+kuba       53989   53574  0 12:59 pts/0    00:00:00 cat
+kuba       53990   53987  0 12:59 pts/0    00:00:00 sleep 2
+kuba       53991   53574  0 12:59 pts/0    00:00:00 ps -af
+kuba@kuba-VirtualBox:~/Desktop/Skrypty$ raz dwa trzy
+raz dwa trzy
+raz dwa trzy
+
+4
+zadanie przeprowadziłem na 4 terminalach na 3 wprowadziłem za pomocą echo 1/2/3 > FIFO dane do pliku FIFO 
+a w 4 uruchomiłem komende cat FIFO 
+przy utworzeniu mknod stworzony plik FIFO przy pobieraniu i wysyłaniu danych z 
+jednego terminala wysyłał je tak jak powinien czyli first in first out jednak przy
+pobieraniu danych z wielu okienek robił to w losowy sposób 
+czasmi przy wprowadzaniu danych przy trerminalach 1 2 3 wysyłał dane 2 1 3 
+
+5 
+
+
+
+
